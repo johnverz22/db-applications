@@ -43,7 +43,7 @@ db_params = {
 
 3. Create routes. Routes are URL pattern associated with a specific action or resource on a web server.
 For instance the URL `http://localhost/index`, `/index` is the route.
-<pre>
+
 ```python
 @app.route('/')
 def index():
@@ -96,7 +96,6 @@ def get_persons():
         error = {"error": e}
         return jsonify(error)
 ```
-</pre>
 
 
 
