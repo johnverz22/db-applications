@@ -1,3 +1,6 @@
+# Database and Application Architecture
+![Local Image](docs/images/web-architecture)
+
 # Java Server and MariaDB
 
 # Python Server with Flask and MariaDB
