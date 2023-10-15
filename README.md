@@ -1,6 +1,9 @@
-# Building a Python JSON Server with Flask and MariaDB
+# Java Server and MariaDB
 
-In this guide, we will create a Python JSON server using Flask and MariaDB. This server will serve JSON data related to persons and can search for persons by their first name.
+# Python Server with Flask and MariaDB
+
+In this guide, we will create a Python JSON server using Flask and MariaDB. 
+This server will serve JSON data.
 
 ## Prerequisites
 
@@ -12,5 +15,9 @@ Before we start, make sure you have the following prerequisites installed on you
 You can install the required modules using the following commands:
 
 ```bash
-pip install mariadb
-pip install flask
+pip install mariadb flask
+```
+
+
+
+
