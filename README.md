@@ -45,6 +45,7 @@ db_params = {
 For instance the URL `http://localhost/index`, `/index` is the route.
 
 ```python
+# Route to serve home page
 @app.route('/')
 def index():
     return send_file('index.html')
@@ -97,5 +98,6 @@ def get_persons():
         return jsonify(error)
 ```
 
+See this [file](backend/server.py) for complete code.
 
 
