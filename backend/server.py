@@ -1,5 +1,5 @@
 import mariadb
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
  
 #  Create an instance of the Flask application 
 app = Flask(__name__)
