@@ -64,7 +64,7 @@ def get_persons():
         cursor = connection.cursor()
 
         # Execute a SQL query to search for persons whose first name contains the search string
-        cursor.execute("SELECT * FROM persons WHERE first_name LIKE ?", f"%{search}%")
+        cursor.execute("SELECT * FROM persons WHERE first_name LIKE ?", (f"%{search}%"))
 
         # Fetch all the data from the executed query
         data = cursor.fetchall()
@@ -100,4 +100,10 @@ def get_persons():
 
 See this [file](backend/server.py) for complete code.
 
-
+4. Run the script
+```bash
+python3 server.py
+```
+or
+py server.py
+```
