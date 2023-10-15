@@ -105,5 +105,7 @@ See this [file](backend/server.py) for complete code.
 python3 server.py
 ```
 or
+
+```bash
 py server.py
 ```
