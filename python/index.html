@@ -108,7 +108,7 @@
             const tableBody = document.querySelector('#data-table tbody');
 
             // Fetch JSON data from the remote URL
-            fetch('http://localhost/data')
+            fetch('http://127.0.0.1:8000/api/persons')
                 .then(response => response.json())
                 .then(jsonData => {
                     // Populate the table with JSON data
@@ -157,7 +157,7 @@
         tableBody.innerHTML = '';
 
         // Fetch data from the '/search' endpoint with the search term
-        fetch(`http://localhost/search?q=${searchTerm}`)
+        fetch(`http://127.0.0.1:8000/api/persons?q=${searchTerm}`)
             .then(response => response.json())
             .then(jsonData => {
                 // Populate the table with JSON data

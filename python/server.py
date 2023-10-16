@@ -1,5 +1,5 @@
 import mariadb
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
  
 #  Create an instance of the Flask application 
 app = Flask(__name__)
@@ -75,4 +75,4 @@ def get_persons():
     
 # Check if the script is being run as the main program
 if __name__ == '__main__': 
-    app.run(debug=True) # start the Flask development web server. 
+    app.run(debug=True, port=8000) # start the Flask development web server. 
