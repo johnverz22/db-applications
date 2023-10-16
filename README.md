@@ -41,8 +41,9 @@ db_params = {
 }
 ```
 
-3. Create routes. Routes are URL pattern associated with a specific action or resource on a web server.
-For instance the URL `http://localhost/index`, `/index` is the route.
+3. Create routes. Routes are URL pattern associated with a specific action or resource on a web server. For instance the URL `http://localhost/index`, `/index` is the route.
+
+These code provides two distinct routes, the one serving home page and the other serving a JSON data of the persons table
 
 ```python
 # Route to serve home page
@@ -56,6 +57,13 @@ def get_persons():
     # Retrieve the "q" parameter from the query string of the request
     search = request.args.get("q")
 
+    # Check if search param is present, then create SQL LIKE pattern
+    if search: 
+        search = f"%{search}%"
+    else:
+        search = "%"
+
+
     try:
         # Establish a connection to the MariaDB database using provided connection parameters
         connection = mariadb.connect(**db_params)
@@ -64,7 +72,7 @@ def get_persons():
         cursor = connection.cursor()
 
         # Execute a SQL query to search for persons whose first name contains the search string
-        cursor.execute("SELECT * FROM persons WHERE first_name LIKE ?", (f"%{search}%"))
+        cursor.execute("SELECT * FROM persons WHERE first_name LIKE %s", (search,))
 
         # Fetch all the data from the executed query
         data = cursor.fetchall()
