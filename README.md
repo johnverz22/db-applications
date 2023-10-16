@@ -2,6 +2,95 @@
 ![Local Image](docs/images/web-architecture)
 
 # Java Server and MariaDB
+In this guide, we will create a Java JSON server using  MariaDB. 
+This server will serve JSON data.
+
+## Prerequisites
+
+Before we start, make sure you have the following prerequisites installed on your system:
+
+- [MariaDB](https://mariadb.org/) (for the database)
+- [MariaDB Connector/J](https://mariadb.com/download-confirmation?group-name=Data%20Access&release-notes-uri=https%3A%2F%2Fmariadb.com%2Fkb%2Fen%2Flibrary%2Fmariadb-connector-j-release-notes%2F&documentation-uri=https%3A%2F%2Fmariadb.com%2Fkb%2Fen%2Flibrary%2Fmariadb-connector-j%2F&download-uri=https%3A%2F%2Fdlm.mariadb.com%2F3418100%2FConnectors%2Fjava%2Fconnector-java-3.2.0%2Fmariadb-java-client-3.2.0.jar&product-name=Java%208%2B%20connector&download-size=635.47%20KB/) (to connect Java and MariaDB)
+
+After downloading the JAR file, create a Java project (suggestion: Use IntelliJ) and import the JAR file to the project
+
+## Code Structure
+1. Setup Database connection
+```Java
+String dbURL = "jdbc:mariadb://localhost:3306/database_name"; 
+String userName = "user";
+String password = "password";
+```
+
+2. Create a HTTP server
+```Java
+int port  = 80; 
+
+HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+```
+3. Create HTTP serve context or routes which can be accessed by the client. Use the database connection to fetch data:
+```Java
+//Create a context that sends a JSON data
+            server.createContext("/data", exchange -> {
+                StringBuilder jsonData = new StringBuilder();
+                jsonData.append("["); //start an array of JSON objects
+                try{
+                    //Initialize database connection
+                    Connection dbConnection = DriverManager.getConnection(dbURL,userName, password);
+                    //SQL query to read data
+                    String sql = "SELECT * FROM persons";
+                    //Create a PreparedStatement
+                    PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
+                    //Execute the query and get the result set
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    //Process the result why looping it
+                    while (resultSet.next()){
+                        //Retrieve row values
+                        int id = resultSet.getInt("id");
+                        String firstName = resultSet.getString("first_name");
+                        String lastName = resultSet.getString("last_name");
+                        String email = resultSet.getString("email");
+                        String gender = resultSet.getString("gender");
+
+                        /*
+                        Continue the JSON array by adding this current row, following format:
+                        {
+                            "id": id,
+                            "first_name": "first_name",
+                            "last_name": "last_name",
+                            "email": "email",
+                            "gender": "gender"
+                        }
+                        */
+                        jsonData.append("{" +
+                                "\"id\": " + id +
+                                ", \"first_name\": \"" + firstName + "\"" +
+                                ", \"last_name\": \"" + lastName + "\"" +
+                                ", \"email\": \"" + email + "\"" +
+                                ", \"gender\": \"" + gender + "\"" +
+                        "}");
+
+                        if (!resultSet.isLast()){
+                            jsonData.append(",");
+                        }
+                    }
+
+                }catch (SQLException sqlE){
+                    sqlE.printStackTrace();
+                }
+
+                jsonData.append("]"); //close the array of object
+
+
+                // Set response headers and write the JSON response
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, jsonData.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(jsonData.toString().getBytes());
+                os.close();
+            });
+```
+See this [file](backend/WebServer.java) for complete code.
 
 # Python Server with Flask and MariaDB
 
