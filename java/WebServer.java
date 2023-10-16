@@ -20,7 +20,7 @@ public class WebServer {
 
         //SET UP WEB SERVER FOR CLIENT APPS
         try{
-            int port  = 80; //Port number for the HTTP server
+            int port  = 8000; //Port number for the HTTP server
 
             //Create a HttpServer object for HTTP server
             HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
