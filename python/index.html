@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Person's Info</title>
+    <style>
+        html{
+            font-family: 'Arial', sans-serif;
+        }
+        h1{
+            text-align:center;
+        }
+        .content{
+            padding: 50px 100px 50px 100px;
+        }
+
+        #search-form > form{
+            width: 800px;
+            margin: auto;
+            padding-bottom: 10px;
+
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        form > input {
+            flex: 1;
+            padding: 8px;
+            margin-right: 8px;
+        }
+
+
+        form > button {
+            width: 100px;
+            padding: 8px;
+         
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: auto;
+            width: 800px;
+        }
+
+
+        table {
+            border: 1px solid #336699;
+            border-radius: 6px;
+        }
+
+
+        th {
+            background-color: #336699;
+            color: #ffffff;
+            text-align: center;
+            padding: 15px;
+        }
+
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        /* Add a hover effect on table rows for interactivity */
+        tr:hover {
+            background-color: #ddd;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Persons Info</h1>
+
+    <div class="content">
+        <div id="search-form">
+            <form>
+                <input type="text" id="search-input">
+                <button onclick="searchTable(event)">Search</button>
+            </form>
+        </div>
+
+
+        <table id="data-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Gender</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to fetch and populate data
+        function fetchDataAndPopulateTable() {
+            // Get a reference to the table body
+            const tableBody = document.querySelector('#data-table tbody');
+
+            // Fetch JSON data from the remote URL
+            fetch('http://localhost/data')
+                .then(response => response.json())
+                .then(jsonData => {
+                    // Populate the table with JSON data
+                    jsonData.forEach((data) => {
+                        const row = document.createElement('tr');
+
+                        // Create and append table cells
+                        const idCell = document.createElement('td');
+                        idCell.textContent = data.id;
+
+                        const firstNameCell = document.createElement('td');
+                        firstNameCell.textContent = data.first_name;
+
+                        const lastNameCell = document.createElement('td');
+                        lastNameCell.textContent = data.last_name;
+
+                        const emailCell = document.createElement('td');
+                        emailCell.textContent = data.email;
+
+                        const genderCell = document.createElement('td');
+                        genderCell.textContent = data.gender;
+
+                        row.appendChild(idCell);
+                        row.appendChild(firstNameCell);
+                        row.appendChild(lastNameCell);
+                        row.appendChild(emailCell);
+                        row.appendChild(genderCell);
+
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+        
+        // Function to search and filter the table
+    function searchTable(event) {
+        event.preventDefault();
+        const searchTerm = document.getElementById('search-input').value;
+
+        // Get a reference to the table body
+        const tableBody = document.querySelector('#data-table tbody');
+
+        // Clear the existing table content
+        tableBody.innerHTML = '';
+
+        // Fetch data from the '/search' endpoint with the search term
+        fetch(`http://localhost/search?q=${searchTerm}`)
+            .then(response => response.json())
+            .then(jsonData => {
+                // Populate the table with JSON data
+                jsonData.forEach((data) => {
+                    const row = document.createElement('tr');
+
+                    // Create and append table cells
+                    const idCell = document.createElement('td');
+                    idCell.textContent = data.id;
+
+                    const firstNameCell = document.createElement('td');
+                    firstNameCell.textContent = data.first_name;
+
+                    const lastNameCell = document.createElement('td');
+                    lastNameCell.textContent = data.last_name;
+
+                    const emailCell = document.createElement('td');
+                    emailCell.textContent = data.email;
+
+                    const genderCell = document.createElement('td');
+                    genderCell.textContent = data.gender;
+
+                    row.appendChild(idCell);
+                    row.appendChild(firstNameCell);
+                    row.appendChild(lastNameCell);
+                    row.appendChild(emailCell);
+                    row.appendChild(genderCell);
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+        // Add an event listener to fetch data after the page is loaded
+        window.addEventListener('DOMContentLoaded', fetchDataAndPopulateTable);
+    </script>
+</body>
+</html>

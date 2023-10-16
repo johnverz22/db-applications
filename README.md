@@ -90,7 +90,7 @@ HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
                 os.close();
             });
 ```
-See this [file](backend/WebServer.java) for complete code.
+See this [file](java/WebServer.java) for complete code.
 
 # Python Server with Flask and MariaDB
 
@@ -195,7 +195,7 @@ def get_persons():
         return jsonify(error)
 ```
 
-See this [file](backend/server.py) for complete code.
+See this [file](python/server.py) for complete code.
 
 4. Run the script
 ```bash
