@@ -1,6 +1,6 @@
 import mariadb
 from flask import Flask, jsonify, request, send_file
- 
+
 #  Create an instance of the Flask application 
 app = Flask(__name__)
 
@@ -13,10 +13,12 @@ db_params = {
     "database": "person_db",
 }
 
+
 # Route to serve home page
 @app.route('/')
 def index():
     return send_file('index.html')
+
 
 # Route to serve the persons data as JSON
 @app.route('/api/persons', methods=['GET'])
@@ -25,16 +27,15 @@ def get_persons():
     search = request.args.get("q")
 
     # Check if search param is present, then create SQL LIKE pattern
-    if search: 
+    if search:
         search = f"%{search}%"
     else:
         search = "%"
 
-
     try:
         # Establish a connection to the MariaDB database using provided connection parameters
         connection = mariadb.connect(**db_params)
-        
+
         # Create a cursor for executing SQL queries
         cursor = connection.cursor()
 
@@ -67,12 +68,12 @@ def get_persons():
     except Exception as e:
         # If an error occurs during the execution, print the error message
         print(f"Error: {e}")
-        
+
         # Create an error dictionary and return it as a JSON response
         error = {"error": e}
         return jsonify(error)
 
-    
+
 # Check if the script is being run as the main program
-if __name__ == '__main__': 
-    app.run(debug=True, port=8000) # start the Flask development web server. 
+if __name__ == '__main__':
+    app.run(debug=True, port=8000)  # start the Flask development web server.

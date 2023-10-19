@@ -1,5 +1,5 @@
 # Adding Search
-1. (Optional) Add enclosing `div` to the whole table and add `form` to accept user input for search.
+## 1. (Optional) Add enclosing `div` to the whole table and add `form` to accept user input for search.
 ```html
 <div>
     <div>
@@ -16,7 +16,7 @@
 ```
 The `onclick` attribute in the `button` element adds an event listener to it. When it is clicked the function `search()` will be exectured passing the event as an arguemnt.
 
-2. Edit the `table` by wrapping the heading with `thead` and adding an empty `tbody`. This way, it will be easier to populate the table with dynamic content.
+## 2. Edit the `table` by wrapping the heading with `thead` and adding an empty `tbody`. This way, it will be easier to populate the table with dynamic content.
 ```html
 <table id="data-table">
     <thead>
@@ -31,7 +31,7 @@ The `onclick` attribute in the `button` element adds an event listener to it. Wh
 ```
 The `tbody` will contain all the dynamic content fetched through ajax.
 
-3. In the javascript, edit the query selector of the `table`.
+## 3. In the javascript, edit the query selector of the `table`.
 From:
 ```javascript
 const table = document.querySelector('table');
@@ -41,7 +41,7 @@ To:
 const table = document.querySelector('table tbody');
 ```
 
-4. In the javascript, create a function `search()` to handle the search button click event. Add the following javascript code.
+## 4. In the javascript, create a function `search()` to handle the search button click event. Add the following javascript code.
 ```javascript
 function search(event) {
 	//prevent to leave the page (or reload it)
@@ -83,7 +83,7 @@ function search(event) {
 ```
 Do not just copy the code as is. This is just a pattern to guide you. Read and understand it.
 
-5. Create additional context or route or path in your server to serve a filtered data based on the search input.
+## 5. Create additional context or route or path in your server to serve a filtered data based on the search input.
 This is the `/api/search` specified in the `fetch()` request.
 
 For Java:
