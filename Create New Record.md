@@ -33,7 +33,48 @@ Create a html form.
 </div>
 ```
 
-## 2. Handle save event via Javascript
+## 2. Handle save event in Javascript
+```javascript
+function save(event){
+    event.preventDefault(); // Prevent page from reloading
+
+    // Get reference to input fields
+  	const firstName = document.getElementById('fname');
+    const lastName = document.getElementById('lname');
+    const gender = document.getElementById('gender');
+    const email= document.getElementById('email');
+
+    // Send a POST request to add a new entry
+    fetch('/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            first_name: firstName.value,
+            last_name: lastName.value,
+            email: email.value,
+            gender: gender.value
+        })
+    })
+    .then(response => response.json())
+    .then(jsonData => {
+        // Clear the existing table content
+        tableBody.innerHTML = '';
+        
+        //ADD CODE HERE TO REFRESH TABLE (SIMILAR TO GETTING DATA IN THE OTHER FUNCTION)
+        
+        //Clear form
+        firstName.value = '';
+        lastName.value = '';
+        gender.value = '';
+        email.value = '';    
+    })
+    .catch(error => {
+            console.error('Error adding new entry:', error);
+    });
+}
+```
 
 ## 3. Process submitted data in the server
 
