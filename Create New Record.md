@@ -1,5 +1,5 @@
 # Create/New Record
-This part discusses on how to insert new record in the database from client side to the server side.
+Steps on how to save the HTML form data as new entry to the database
 
 ## 1. Adding Form
 Create a html form.
