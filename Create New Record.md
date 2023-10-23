@@ -82,7 +82,8 @@ Create another context or route in the Java/Python program to process the form's
 For Java, it is important that you avoid using similar prefix. For example if you want to add `/api/save` and `/api/insert`,
 you can use two separate context: `/save` and `/insert`
 
-For Java:
+FOR JAVA:
+
 Create another context. Follow the pattern of first contexts that you created
 
 ### A. Check if the Request method is `POST`
@@ -179,3 +180,13 @@ The context will return another JSON object of the updated person table and use 
     	// Continue
     })	
 ```
+
+
+
+
+
+FOR PYTHON:
+### A. Check if the Request method is `POST`
+### B. To retrieve the data submitted by the Javascript `fetch()`
+### C. Add a try...catch to handle `SQLException`
+### D. Save the data to the database
