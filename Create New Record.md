@@ -84,134 +84,134 @@ you can use two separate context: `/save` and `/insert`
 
 ## FOR JAVA
 
-    Create another context. Follow the pattern of first contexts that you created
+Create another context. Follow the pattern of first contexts that you created
 
-    ### A. Check if the Request method is `POST`
-    ```java
-    if ("POST".equals(exchange.getRequestMethod())) {
-    	// Process data here
+### A. Check if the Request method is `POST`
+```java
+if ("POST".equals(exchange.getRequestMethod())) {
+	// Process data here
 
-    } else {
-    	// Handle invalid HTTP method (e.g., not POST)
-        String response = "Invalid request.";
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(405, response.length()); // 405 Method Not Allowed
-        OutputStream os = exchange.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
-    }	
-    ```
-    It is important that you prevent illegal access to the context/route.
+} else {
+	// Handle invalid HTTP method (e.g., not POST)
+    String response = "Invalid request.";
+    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(405, response.length()); // 405 Method Not Allowed
+    OutputStream os = exchange.getResponseBody();
+    os.write(response.getBytes());
+    os.close();
+}	
+```
+It is important that you prevent illegal access to the context/route.
 
-    ### B. To retrieve the data submitted by the Javascript `fetch()`
-    ```java
-    InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
-    BufferedReader br = new BufferedReader(isr);
-    StringBuilder requestBody = new StringBuilder();
-    String line;
-    while ((line = br.readLine()) != null) {
-        requestBody.append(line);
-    }
-    ```
-    Import these packages: `java.io.*;`
+### B. To retrieve the data submitted by the Javascript `fetch()`
+```java
+InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
+BufferedReader br = new BufferedReader(isr);
+StringBuilder requestBody = new StringBuilder();
+String line;
+while ((line = br.readLine()) != null) {
+    requestBody.append(line);
+}
+```
+Import these packages: `java.io.*;`
 
-    ### C. Add a try...catch to handle `SQLException`
-    ```java
-    try{
-    	//Process data here
+### C. Add a try...catch to handle `SQLException`
+```java
+try{
+	//Process data here
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        // Handle errors and send an error response
-        String response = "Error adding a new entry.";
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(500, response.length()); // 500 Internal Server Error
-        OutputStream os = exchange.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
-    }    
-    ```
-    ### D. Save the data to the database
-    Add the provided [JSONObject.jar](java/json-20231013.jar) to the library and import the packages in `org.json.*`
+} catch (Exception e) {
+    e.printStackTrace();
+    // Handle errors and send an error response
+    String response = "Error adding a new entry.";
+    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(500, response.length()); // 500 Internal Server Error
+    OutputStream os = exchange.getResponseBody();
+    os.write(response.getBytes());
+    os.close();
+}    
+```
+### D. Save the data to the database
+Add the provided [JSONObject.jar](java/json-20231013.jar) to the library and import the packages in `org.json.*`
 
-    Convert the `requestBody` into `JSONObject`:
-    ```java
-    JSONObject json = new JSONObject(requestBody.toString());
-    String firstName = json.getString("first_name");
-    String lastName = json.getString("last_name");
-    String email = json.getString("email");
-    String gender = json.getString("gender");
-    ```
+Convert the `requestBody` into `JSONObject`:
+```java
+JSONObject json = new JSONObject(requestBody.toString());
+String firstName = json.getString("first_name");
+String lastName = json.getString("last_name");
+String email = json.getString("email");
+String gender = json.getString("gender");
+```
 
-    Create a connection to the database
+Create a connection to the database
 
-    Create a SQL statement
-    ```java
-    //SQL query to insert data
-    String sql = "INSERT INTO persons(first_name, last_name, email, gender) VALUES(?,?,?,?)";
-    //Create a PreparedStatement
-    PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
-    preparedStatement.setString(1, firstName);
-    preparedStatement.setString(2, lastName);
-    preparedStatement.setString(3, email);
-    preparedStatement.setString(4, gender);
+Create a SQL statement
+```java
+//SQL query to insert data
+String sql = "INSERT INTO persons(first_name, last_name, email, gender) VALUES(?,?,?,?)";
+//Create a PreparedStatement
+PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
+preparedStatement.setString(1, firstName);
+preparedStatement.setString(2, lastName);
+preparedStatement.setString(3, email);
+preparedStatement.setString(4, gender);
 
-    //Execute the INSERT command
-    preparedStatement.executeUpdate();
+//Execute the INSERT command
+preparedStatement.executeUpdate();
 
-    ```
+```
 
-    After saving the data, fetch the updated table data by running another `SELECT` query similar to other context.
+After saving the data, fetch the updated table data by running another `SELECT` query similar to other context.
 
 
 
 ## FOR PYTHON
 
-    ### A. Create a route that accepts POST request only
-    ```python
-    @app.route('/create', methods=['POST'])
-    ```
-    And subsequently define new function to save new record.
+### A. Create a route that accepts POST request only
+```python
+@app.route('/create', methods=['POST'])
+```
+And subsequently define new function to save new record.
 
-    ### B. To retrieve the data submitted by the Javascript `fetch()`
-    ```python
-    # Get the JSON data
-    person = request.get_json()     
-    # Create a dictionary with person fields
-    new_person = {
-        'first_name' : person.get('first_name'),
-        'last_name' : person.get('last_name'),
-        'email' : person.get('email'),
-        'gender' : person.get('gender')
-    }
+### B. To retrieve the data submitted by the Javascript `fetch()`
+```python
+# Get the JSON data
+person = request.get_json()     
+# Create a dictionary with person fields
+new_person = {
+    'first_name' : person.get('first_name'),
+    'last_name' : person.get('last_name'),
+    'email' : person.get('email'),
+    'gender' : person.get('gender')
+}
 
-    ```
+```
 
-    ### C. Add a try...except to handle `Exception`
-    Add a `try` and `except` block to handle Exception. Refer to other route
+### C. Add a try...except to handle `Exception`
+Add a `try` and `except` block to handle Exception. Refer to other route
 
-    Add database connection and cursor for executing queries
+Add database connection and cursor for executing queries
 
-    ### D. Save the data to the database
-    Follow the following format on how insert new record.
+### D. Save the data to the database
+Follow the following format on how insert new record.
 
-    ```python
-    # Insert query
-    insert_query = (
-        "INSERT INTO persons "
-        "(first_name, last_name, email, gender) "
-        "VALUES (%(first_name)s, %(last_name)s, %(email)s, %(gender)s)"
-    )
+```python
+# Insert query
+insert_query = (
+    "INSERT INTO persons "
+    "(first_name, last_name, email, gender) "
+    "VALUES (%(first_name)s, %(last_name)s, %(email)s, %(gender)s)"
+)
 
-    # Execute a SQL query to save new entry
-    cursor.execute(insert_query, new_person)
+# Execute a SQL query to save new entry
+cursor.execute(insert_query, new_person)
 
-    # Commit the changes to the database
-    connection.commit()
-    ```
+# Commit the changes to the database
+connection.commit()
+```
 
-    Following the pattern in other route, fetch the updated data and
-    return a JSON response to be used to update the table
+Following the pattern in other route, fetch the updated data and
+return a JSON response to be used to update the table
 
 ## 4. Refresh table in the Javascript
 The context will return another JSON object of the updated person table and use it to repopulate the table.
