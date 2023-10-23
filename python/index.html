@@ -156,7 +156,7 @@
         // Clear the existing table content
         tableBody.innerHTML = '';
 
-        // Fetch data from the '/search' endpoint with the search term
+        // Fetch data from the '/api/search' endpoint with the search term
         fetch(`http://127.0.0.1:8000/api/persons?q=${searchTerm}`)
             .then(response => response.json())
             .then(jsonData => {

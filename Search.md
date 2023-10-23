@@ -137,7 +137,7 @@ For python:
 ```python
 # Route to serve the filtered persons data as JSON
 @app.route('/api/search', methods=['GET'])
-def get_persons():
+def search_persons():
 	# Retrieve the "q" parameter from the query string of the request
 	search = request.args.get("q")
 

@@ -73,6 +73,66 @@ def get_persons():
         error = {"error": e}
         return jsonify(error)
 
+# Route to serve the filtered persons data as JSON
+@app.route('/api/search', methods=['GET'])
+def search_persons():
+    # Retrieve the "q" parameter from the query string of the request
+    search = request.args.get("q")
+
+    # Check if search param is present, then create SQL LIKE pattern
+    if search: 
+        search = f"%{search}%"
+    else:
+        search = "%"
+    try:
+        # Establish a connection to the MariaDB database using provided connection parameters
+        connection = mariadb.connect(**db_params)  
+        
+        # Create a cursor for executing SQL queries
+        cursor = connection.cursor()
+        
+        # Execute a SQL query to search for persons whose first name contains the search string
+        sql = query = """
+            SELECT *
+            FROM persons
+            WHERE first_name LIKE %s
+            OR last_name LIKE %s
+            OR gender LIKE %s
+            OR email LIKE %s
+        """
+
+        # Execute the query with a single tuple of parameters
+        cursor.execute(query, (search, search, search, search))
+        
+
+        # Fetch all the data from the executed query
+        data = cursor.fetchall()
+        
+        # Close the database connection
+        connection.close()
+        
+        # Initialize an empty list to store the results
+        persons = []
+        # Iterate through the fetched data and format it as a list of dictionaries
+        for row in data:
+            person = {
+                "id": row[0],
+                "first_name": row[1],
+                "last_name": row[2],
+                "gender": row[3],
+                "email": row[4],
+            }
+            persons.append(person)
+
+        # Return the results as a JSON response
+        return jsonify(persons)
+    except Exception as e:
+        # If an error occurs during the execution, print the error message
+        print(f"Error: {e}") 
+        # Create an error dictionary and return it as a JSON response
+        error = {"error": e}
+    
+    return jsonify(error)
 
 # Check if the script is being run as the main program
 if __name__ == '__main__':
