@@ -33,7 +33,8 @@ Create a html form.
 </div>
 ```
 
-## 2. Handle save event in Javascript
+## 2. Handle Save Click Event in Javascript
+Create a separate function to transmit the forms data into the server
 ```javascript
 function save(event){
     event.preventDefault(); // Prevent page from reloading
@@ -77,5 +78,41 @@ function save(event){
 ```
 
 ## 3. Process submitted data in the server
+Create another context or route in the Java/Python program to process the form's data.
+For Java, it is important that you avoid using similar prefix. For example if you want to add `/api/save` and `/api/insert`,
+you can use two separate context: `/save` and `/insert`
+
+For Java:
+Create another context. Follow the pattern of first contexts that you created
+
+### Check if the Request method is `POST`
+```java
+if ("POST".equals(exchange.getRequestMethod())) {
+	// Process data here
+
+} else {
+	// Handle invalid HTTP method (e.g., not POST)
+    String response = "Invalid request.";
+    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(405, response.length()); // 405 Method Not Allowed
+    OutputStream os = exchange.getResponseBody();
+    os.write(response.getBytes());
+    os.close();
+}	
+```
+It is important that you prevent illegal access to the context/route.
+
+### To retrieve the data submitted by the Javascript `fetch()`
+```java
+InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
+BufferedReader br = new BufferedReader(isr);
+StringBuilder requestBody = new StringBuilder();
+String line;
+while ((line = br.readLine()) != null) {
+    requestBody.append(line);
+}
+```
+Import these packages: `java.io.*;`
+
 
 ## 4. Refresh table
