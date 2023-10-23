@@ -163,26 +163,6 @@ preparedStatement.executeUpdate();
 
 After saving the data, fetch the updated table data by running another `SELECT` query similar to other context.
 
-## 4. Refresh table in the Javascript
-The context will return another JSON object of the updated person table and use it to repopulate the table.
-```javascript
-//...
-.then(jsonData => {
-    // Clear the existing table content
-    tableBody.innerHTML = '';
-    //Refresh table
-    jsonData.forEach(data => {
-        const row = document.createElement('tr');
-        // Create and append table cells
-        const idCell = document.createElement('td');
-        idCell.textContent = data.id;
-
-    	// Continue
-    })	
-```
-
-
-
 
 
 **FOR PYTHON:**
@@ -206,12 +186,14 @@ new_person = {
 
 ```
 
-### C. Add a try...catch to handle `Exception`
+### C. Add a try...except to handle `Exception`
+Add a `try` and `except` block to handle Exception. Refer to other route
+
 Add database connection and cursor for executing queries
 
+### D. Save the data to the database
 Follow the following format on how insert new record.
 
-### D. Save the data to the database
 ```python
 # Insert query
 insert_query = (
@@ -226,6 +208,24 @@ cursor.execute(insert_query, new_person)
 # Commit the changes to the database
 connection.commit()
 ```
-### E. Create a JSON response from the updated database
-Following the pattern in the route, fetch the updated data and
+
+Following the pattern in other route, fetch the updated data and
 return a JSON response to be used to update the table
+
+## 4. Refresh table in the Javascript
+The context will return another JSON object of the updated person table and use it to repopulate the table.
+```javascript
+//...
+.then(jsonData => {
+    // Clear the existing table content
+    tableBody.innerHTML = '';
+    //Refresh table
+    jsonData.forEach(data => {
+        const row = document.createElement('tr');
+        // Create and append table cells
+        const idCell = document.createElement('td');
+        idCell.textContent = data.id;
+
+        // Continue
+    })  
+```
