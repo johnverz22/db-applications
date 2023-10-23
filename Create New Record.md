@@ -82,7 +82,7 @@ Create another context or route in the Java/Python program to process the form's
 For Java, it is important that you avoid using similar prefix. For example if you want to add `/api/save` and `/api/insert`,
 you can use two separate context: `/save` and `/insert`
 
-FOR JAVA:
+**FOR JAVA:**
 
 Create another context. Follow the pattern of first contexts that you created
 
@@ -185,8 +185,47 @@ The context will return another JSON object of the updated person table and use 
 
 
 
-FOR PYTHON:
-### A. Check if the Request method is `POST`
+**FOR PYTHON:**
+### A. Create a route that accepts POST request only
+```python
+@app.route('/create', methods=['POST'])
+```
+And subsequently define new function to save new record.
+
 ### B. To retrieve the data submitted by the Javascript `fetch()`
-### C. Add a try...catch to handle `SQLException`
+```python
+# Get the JSON data
+person = request.get_json()     
+# Create a dictionary with person fields
+new_person = {
+    'first_name' : person.get('first_name'),
+    'last_name' : person.get('last_name'),
+    'email' : person.get('email'),
+    'gender' : person.get('gender')
+}
+
+```
+
+### C. Add a try...catch to handle `Exception`
+Add database connection and cursor for executing queries
+
+Follow the following format on how insert new record.
+
 ### D. Save the data to the database
+```python
+# Insert query
+insert_query = (
+    "INSERT INTO persons "
+    "(first_name, last_name, email, gender) "
+    "VALUES (%(first_name)s, %(last_name)s, %(email)s, %(gender)s)"
+)
+
+# Execute a SQL query to save new entry
+cursor.execute(insert_query, new_person)
+
+# Commit the changes to the database
+connection.commit()
+```
+### E. Create a JSON response from the updated database
+Following the pattern in the route, fetch the updated data and
+return a JSON response to be used to update the table
