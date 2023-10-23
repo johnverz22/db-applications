@@ -104,6 +104,7 @@ if ("POST".equals(exchange.getRequestMethod())) {
 It is important that you prevent illegal access to the context/route.
 
 ### B. To retrieve the data submitted by the Javascript `fetch()`
+Put this inside the `if` block
 ```java
 InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
 BufferedReader br = new BufferedReader(isr);
@@ -116,6 +117,7 @@ while ((line = br.readLine()) != null) {
 Import these packages: `java.io.*;`
 
 ### C. Add a try...catch to handle `SQLException`
+Put this inside the `if` block following the reading of the JSON sent from client
 ```java
 try{
 	//Process data here
