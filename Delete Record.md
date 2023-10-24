@@ -6,7 +6,7 @@ In the HTML `table` add another column for action buttons.
 ```html
 <thead>   	
     <tr>	
-        ...
+        <th>...</th>
    		<th>Gender</th>
         <th>Action</th>  <!-- Add this column here for the delete buttons -->
     </tr>
