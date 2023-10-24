@@ -4,12 +4,15 @@ Steps on how to add a delete button on the table
 ## 1. Adding a delete button
 In the HTML `table` add another column for action buttons.
 ```html
-   		...
+<thead>   	
+    <tr>	
+        ...
    		<th>Gender</th>
         <th>Action</th>  <!-- Add this column here for the delete buttons -->
     </tr>
 </thead>
 <tbody>
+</tbody>
 ```
 In the Javascript code, locate the place where you popolated where you populated the the table with data by adding columns `td` and rows `tr`.
 ```javascript
