@@ -221,14 +221,14 @@ The context will return another JSON object of the updated person table and use 
 //...
 .then(jsonData => {
     // Clear the existing table content
-    tableBody.innerHTML = '';
+    table.innerHTML = '';
     //Refresh table
     jsonData.forEach(data => {
         const row = document.createElement('tr');
         // Create and append table cells
-        const idCell = document.createElement('td');
-        idCell.textContent = data.id;
+        const trId = document.createElement('td');
+        trId.textContent = data.id;
 
-        // Continue
+        //TO DO: Continue
     })  
 ```
