@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>Person's Info</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         html{
             font-family: 'Arial', sans-serif;
@@ -30,7 +31,7 @@
         }
 
 
-        form > button {
+        #search-form form button {
             width: 100px;
             padding: 8px;
          
@@ -71,6 +72,47 @@
         tr:hover {
             background-color: #ddd;
         }
+
+        #create-form{
+            width: 780px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #336699;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #create-form form div button{
+
+            margin-left: 0px;
+        }
+
+            
+
+        form div {
+            margin-top: 10px;
+        }
+        form div label{
+            display: inline-block;
+            width: 120px;
+            text-align: left;
+        }
+
+        form div input, form div select{
+            box-sizing: border-box; 
+            width:300px;
+            padding: 3px;
+        }
+
+        .delete-button, .update-button{
+            background-color: transparent; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        #edit-save{
+            display:none;
+        }
         
     </style>
 </head>
@@ -94,21 +136,61 @@
                     <th>Last Name</th>
                     <th>Email</th>
                     <th>Gender</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
             </tbody>
         </table>
+
+        <div id="create-form">
+            <h2 id="form-title">New Record</h2>
+            <form>
+              <div>
+                    <label for="fname">First name</label>
+                    <input type="text" id="fname">
+              </div>
+              <div>
+                    <label for="lname">Last name</label>
+                    <input type="text" id="lname">
+              </div>
+              <div>
+                    <label for="gender">Gender</label>
+                    <select id="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+              </div>
+              <div>
+                    <label for="email">Email Address</label>
+                    <input type="text" id="email">
+
+                    <input type="hidden" id="id">
+              </div>
+              <div>
+                  <button id="new-save" type="button" onclick="save(event)">Save</button>
+                  <button id="edit-save" type="button" onclick="updateSave(event)">Save Changes</button>
+
+              </div>
+            </form>
+
+        </div>
     </div>
 
     <script>
+        const firstName = document.getElementById('fname');
+        const lastName = document.getElementById('lname');
+        const gender = document.getElementById('gender');
+        const email= document.getElementById('email');
+
+
         // Function to fetch and populate data
         function fetchDataAndPopulateTable() {
             // Get a reference to the table body
             const tableBody = document.querySelector('#data-table tbody');
 
             // Fetch JSON data from the remote URL
-            fetch('http://localhost/data')
+            fetch('http://localhost:8000/data')
                 .then(response => response.json())
                 .then(jsonData => {
                     // Populate the table with JSON data
@@ -131,11 +213,32 @@
                         const genderCell = document.createElement('td');
                         genderCell.textContent = data.gender;
 
+                        const actionsCell = document.createElement('td');
+
+                        // Create "Delete" button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add("delete-button");
+                        deleteButton.innerHTML = "<i class='fa-solid fa-trash'></i>";
+                        deleteButton.setAttribute("title","Delete person");
+                        deleteButton.addEventListener('click', () => deleteRow(data.id)); // Call delete function with the ID
+
+                        // Create "Update" button
+                        const updateButton = document.createElement('button');
+                        updateButton.classList.add("update-button");
+                        updateButton.innerHTML = "<i class='fa-solid fa-file-pen'></i>";
+                        updateButton.setAttribute("title", "Update person");
+                        updateButton.addEventListener('click', () => updateRow(data.id)); // Call update function with the ID
+
+                        // Add buttons to action column
+                        actionsCell.appendChild(deleteButton);
+                        actionsCell.appendChild(updateButton);
+
                         row.appendChild(idCell);
                         row.appendChild(firstNameCell);
                         row.appendChild(lastNameCell);
                         row.appendChild(emailCell);
                         row.appendChild(genderCell);
+                        row.appendChild(actionsCell);
 
                         tableBody.appendChild(row);
                     });
@@ -146,22 +249,103 @@
         }
         
         // Function to search and filter the table
-    function searchTable(event) {
-        event.preventDefault();
-        const searchTerm = document.getElementById('search-input').value;
+        function searchTable(event) {
+            event.preventDefault();
+            const searchTerm = document.getElementById('search-input').value;
 
-        // Get a reference to the table body
-        const tableBody = document.querySelector('#data-table tbody');
+            // Get a reference to the table body
+            const tableBody = document.querySelector('#data-table tbody');
 
-        // Clear the existing table content
-        tableBody.innerHTML = '';
+            // Fetch data from the '/search' endpoint with the search term
+            fetch(`http://localhost:8000/search?q=${searchTerm}`)
+                .then(response => response.json())
+                .then(jsonData => {
+                    // Clear the existing table content
+                    tableBody.innerHTML = '';
 
-        // Fetch data from the '/search' endpoint with the search term
-        fetch(`http://localhost/search?q=${searchTerm}`)
+                    // Populate the table with JSON data
+                    jsonData.forEach((data) => {
+                        const row = document.createElement('tr');
+
+                        // Create and append table cells
+                        const idCell = document.createElement('td');
+                        idCell.textContent = data.id;
+
+                        const firstNameCell = document.createElement('td');
+                        firstNameCell.textContent = data.first_name;
+
+                        const lastNameCell = document.createElement('td');
+                        lastNameCell.textContent = data.last_name;
+
+                        const emailCell = document.createElement('td');
+                        emailCell.textContent = data.email;
+
+                        const genderCell = document.createElement('td');
+                        genderCell.textContent = data.gender;
+
+                        const actionsCell = document.createElement('td');
+
+                        // Create "Delete" button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add("delete-button");
+                        deleteButton.innerHTML = "<i class='fa-solid fa-trash'></i>";
+                        deleteButton.setAttribute("title","Delete person");
+                        deleteButton.addEventListener('click', () => deleteRow(data.id)); // Call delete function with the ID
+
+                        // Create "Update" button
+                        const updateButton = document.createElement('button');
+                        updateButton.classList.add("update-button");
+                        updateButton.innerHTML = "<i class='fa-solid fa-file-pen'></i>";
+                        updateButton.setAttribute("title", "Update person");
+                        updateButton.addEventListener('click', () => updateRow(data.id)); // Call update function with the ID
+
+                        // Add buttons to action column
+                        actionsCell.appendChild(deleteButton);
+                        actionsCell.appendChild(updateButton);
+
+
+                        row.appendChild(idCell);
+                        row.appendChild(firstNameCell);
+                        row.appendChild(lastNameCell);
+                        row.appendChild(emailCell);
+                        row.appendChild(genderCell);
+                        row.appendChild(actionsCell);
+
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        function save(event){
+            event.preventDefault();
+
+
+            // Get a reference to the table body
+            const tableBody = document.querySelector('#data-table tbody');
+
+            // Send a POST request to add a new entry
+            fetch('/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    first_name: firstName.value,
+                    last_name: lastName.value,
+                    email: email.value,
+                    gender: gender.value
+                })
+            })
             .then(response => response.json())
             .then(jsonData => {
-                // Populate the table with JSON data
-                jsonData.forEach((data) => {
+                // Clear the existing table content
+                tableBody.innerHTML = '';
+
+                //Refresh table
+                jsonData.forEach(data => {
                     const row = document.createElement('tr');
 
                     // Create and append table cells
@@ -180,19 +364,246 @@
                     const genderCell = document.createElement('td');
                     genderCell.textContent = data.gender;
 
+                    const actionsCell = document.createElement('td');
+
+                    // Create "Delete" button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.classList.add("delete-button");
+                    deleteButton.innerHTML = "<i class='fa-solid fa-trash'></i>";
+                    deleteButton.setAttribute("title","Delete person");
+                    deleteButton.addEventListener('click', () => deleteRow(data.id)); // Call delete function with the ID
+
+                    // Create "Update" button
+                    const updateButton = document.createElement('button');
+                    updateButton.classList.add("update-button");
+                    updateButton.innerHTML = "<i class='fa-solid fa-file-pen'></i>";
+                    updateButton.setAttribute("title", "Update person");
+                    updateButton.addEventListener('click', () => updateRow(data.id)); // Call update function with the ID
+
+                    // Add buttons to action column
+                    actionsCell.appendChild(deleteButton);
+                    actionsCell.appendChild(updateButton);
+
                     row.appendChild(idCell);
                     row.appendChild(firstNameCell);
                     row.appendChild(lastNameCell);
                     row.appendChild(emailCell);
                     row.appendChild(genderCell);
+                    row.appendChild(actionsCell);
 
                     tableBody.appendChild(row);
                 });
+                //Clear form
+                firstName.value = '';
+                lastName.value = '';
+                gender.value = '';
+                email.value = '';    
             })
             .catch(error => {
+                console.error('Error adding new entry:', error);
+            });
+        }
+
+        // Function to handle the "Delete" button click
+        function deleteRow(id){
+            const confirm = window.confirm('Are you sure you want to delete this item?');
+
+            if(confirm){
+                // Get a reference to the table body
+                const tableBody = document.querySelector('#data-table tbody');
+
+
+                // Perform a fetch request to delete the entry by ID
+                fetch(`/delete?id=${id}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(jsonData => {
+                    // Clear the existing table content
+                    tableBody.innerHTML = '';
+
+                    //Refresh table
+                    jsonData.forEach(data => {
+                        const row = document.createElement('tr');
+
+                        // Create and append table cells
+                        const idCell = document.createElement('td');
+                        idCell.textContent = data.id;
+
+                        const firstNameCell = document.createElement('td');
+                        firstNameCell.textContent = data.first_name;
+
+                        const lastNameCell = document.createElement('td');
+                        lastNameCell.textContent = data.last_name;
+
+                        const emailCell = document.createElement('td');
+                        emailCell.textContent = data.email;
+
+                        const genderCell = document.createElement('td');
+                        genderCell.textContent = data.gender;
+
+                        const actionsCell = document.createElement('td');
+
+                        // Create "Delete" button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add("delete-button");
+                        deleteButton.innerHTML = "<i class='fa-solid fa-trash'></i>";
+                        deleteButton.setAttribute("title","Delete person");
+                        deleteButton.addEventListener('click', () => deleteRow(data.id)); // Call delete function with the ID
+
+                        // Create "Update" button
+                        const updateButton = document.createElement('button');
+                        updateButton.classList.add("update-button");
+                        updateButton.innerHTML = "<i class='fa-solid fa-file-pen'></i>";
+                        updateButton.setAttribute("title", "Update person");
+                        updateButton.addEventListener('click', () => updateRow(data.id)); // Call update function with the ID
+
+                        // Add buttons to action column
+                        actionsCell.appendChild(deleteButton);
+                        actionsCell.appendChild(updateButton);
+
+                        row.appendChild(idCell);
+                        row.appendChild(firstNameCell);
+                        row.appendChild(lastNameCell);
+                        row.appendChild(emailCell);
+                        row.appendChild(genderCell);
+                        row.appendChild(actionsCell);
+
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error deleting the entry:', error);
+                });
+            }
+            
+    
+        }
+
+        // Function to handle update
+        function updateRow(id){
+
+            fetch(`/update?id=${id}`)
+            .then(response => response.json())
+            .then(person => {
+                // Hide and show buttons
+                document.getElementById("edit-save").style.display="inline-block";
+                document.getElementById("new-save").style.display="none";
+                // Populate form
+                firstName.value = person.first_name;
+                lastName.value = person.last_name;
+                gender.value = person.gender;
+                email.value = person.email;
+                document.getElementById("id").value = person.id;
+
+                //Scroll into form
+                document.getElementById("create-form").scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                //Change form tile
+                document.getElementById("form-title").textContent = "Update Record | " +person.last_name;
+            })
+            .catch(error =>{
                 console.error('Error fetching data:', error);
             });
-    }
+        }
+
+        function updateSave(event){
+            event.preventDefault();
+
+            id = document.getElementById("id");
+
+            // Get a reference to the table body
+            const tableBody = document.querySelector('#data-table tbody');
+
+            // Send a POST request to add a new entry
+            fetch('/update-save', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: id.value,
+                    first_name: firstName.value,
+                    last_name: lastName.value,
+                    email: email.value,
+                    gender: gender.value
+                })
+            })
+            .then(response => response.json())
+            .then(jsonData => {
+                // Clear the existing table content
+                tableBody.innerHTML = '';
+
+                //Refresh table
+                jsonData.forEach(data => {
+                    const row = document.createElement('tr');
+
+                    // Create and append table cells
+                    const idCell = document.createElement('td');
+                    idCell.textContent = data.id;
+
+                    const firstNameCell = document.createElement('td');
+                    firstNameCell.textContent = data.first_name;
+
+                    const lastNameCell = document.createElement('td');
+                    lastNameCell.textContent = data.last_name;
+
+                    const emailCell = document.createElement('td');
+                    emailCell.textContent = data.email;
+
+                    const genderCell = document.createElement('td');
+                    genderCell.textContent = data.gender;
+
+                    const actionsCell = document.createElement('td');
+
+                    // Create "Delete" button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.classList.add("delete-button");
+                    deleteButton.innerHTML = "<i class='fa-solid fa-trash'></i>";
+                    deleteButton.setAttribute("title","Delete person");
+                    deleteButton.addEventListener('click', () => deleteRow(data.id)); // Call delete function with the ID
+
+                    // Create "Update" button
+                    const updateButton = document.createElement('button');
+                    updateButton.classList.add("update-button");
+                    updateButton.innerHTML = "<i class='fa-solid fa-file-pen'></i>";
+                    updateButton.setAttribute("title", "Update person");
+                    updateButton.addEventListener('click', () => updateRow(data.id)); // Call update function with the ID
+
+                    // Add buttons to action column
+                    actionsCell.appendChild(deleteButton);
+                    actionsCell.appendChild(updateButton);
+
+                    row.appendChild(idCell);
+                    row.appendChild(firstNameCell);
+                    row.appendChild(lastNameCell);
+                    row.appendChild(emailCell);
+                    row.appendChild(genderCell);
+                    row.appendChild(actionsCell);
+
+                    tableBody.appendChild(row);
+                });
+                //Clear form
+                firstName.value = '';
+                lastName.value = '';
+                gender.value = '';
+                email.value = ''; 
+
+                // Hide and show buttons
+                document.getElementById("edit-save").style.display="none";
+                document.getElementById("new-save").style.display="inline-block";
+        
+
+                //Scroll into table
+                document.getElementById("data-table").scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                //Change form tile
+                document.getElementById("form-title").textContent = "New Record";   
+            })
+            .catch(error => {
+                console.error('Error adding new entry:', error);
+            });
+        }
 
         // Add an event listener to fetch data after the page is loaded
         window.addEventListener('DOMContentLoaded', fetchDataAndPopulateTable);
